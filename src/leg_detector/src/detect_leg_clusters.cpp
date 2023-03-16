@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -45,7 +45,10 @@
 #include <memory>
 
 // OpenCV related Headers
-#include <opencv2/core/core.hpp>
+#include <opencv2/core/types_c.h>
+#include <opencv2/videoio/videoio_c.h>
+
+// #include <opencv2/core/core.hpp>
 #include <opencv2/ml/ml.hpp>
 #include <opencv2/ml.hpp>
 
@@ -135,14 +138,14 @@ private:
 
     std::shared_ptr<tf2_ros::Buffer> buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tfl_;
-    
-            
+
+
     cv::Ptr<cv::ml::RTrees> forest = cv::ml::RTrees::create();
 
     int feat_count_;
 
     ClusterFeatures cf_;
-    
+
     int scan_num_;
     int num_prev_markers_published_;
     bool use_scan_header_stamp_for_tfs_;
@@ -165,9 +168,9 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
 
     /**
-     * @brief Clusters the scan according to euclidian distance, 
+     * @brief Clusters the scan according to euclidian distance,
      *        predicts the confidence that each cluster is a human leg and publishes the results
-     * 
+     *
      * Called every time a laser scan is published.
      */
     void laserCallback(const sensor_msgs::msg::LaserScan::SharedPtr scan)
@@ -175,7 +178,7 @@ private:
         laser_processor::ScanProcessor processor(*scan);
         processor.splitConnected(cluster_dist_euclid_);
         processor.removeLessThan(min_points_per_cluster_);
-        
+
         // OpenCV matrix needed to use the OpenCV random forest classifier
         CvMat* tmp_mat = cvCreateMat(1, feat_count_, CV_32FC1);
 
@@ -187,24 +190,24 @@ private:
         bool transform_available;
         rclcpp::Clock tf_time;
         rclcpp::Time tf_time1;
-        
+
         // Use time from scan header
-        if (use_scan_header_stamp_for_tfs_) 
+        if (use_scan_header_stamp_for_tfs_)
         {
             tf_time1 = scan->header.stamp;
 
             try {
                 buffer_->lookupTransform(fixed_frame_, scan->header.frame_id, tf_time1, rclcpp::Duration(1.0));
-                transform_available = buffer_->canTransform(fixed_frame_, scan->header.frame_id, tf_time1);              
+                transform_available = buffer_->canTransform(fixed_frame_, scan->header.frame_id, tf_time1);
             } catch(tf2::TransformException &e) {
                 RCLCPP_INFO (this->get_logger(), "Stopped here : Detect_leg_clusters: No tf available");
                 transform_available = false;
-                
+
             }
         } else {
 
             // Otherwise just use the latest tf available
-            
+
             tf_time.now();
             transform_available = buffer_->canTransform(fixed_frame_, scan->header.frame_id, tf_time1);
         }
@@ -220,7 +223,7 @@ private:
             for (std::list<laser_processor::SampleSet*>::iterator cluster = processor.getClusters().begin();cluster != processor.getClusters().end(); cluster++)
             {
                 // Get position of cluster in laser frame
-                std::string frame_id = scan->header.frame_id;                               
+                std::string frame_id = scan->header.frame_id;
                 geometry_msgs::msg::PointStamped position;
                 geometry_msgs::msg::PointStamped position1;
                 position.header.frame_id = frame_id;
@@ -235,7 +238,7 @@ private:
                     std::vector<float> f = cf_.calcClusterFeatures(*cluster, *scan);
                     for (int k = 0; k < feat_count_; k++)
                         tmp_mat->data.fl[k] = (float)(f[k]);
-                    
+
                     #if (CV_VERSION_MAJOR <= 3 || CV_VERSION_MINOR <= 2)
                         // Output of forest->predict is [-1.0, 1.0] so we scale to reach [0.0, 1.0]
                         float probability_of_leg = 0.5 * (1.0 + forest->predict(cv::cvarrToMat(tmp_mat)));
@@ -273,7 +276,7 @@ private:
                         }
 
                     }
-                    
+
                 }
             }
         }
@@ -307,16 +310,16 @@ private:
             m.color.b = leg.confidence;
             markers_pub_->publish(m);
 
-            // Comparison using '==' and not '>=' is important, as it allows <max_detected_clusters_>=-1 
+            // Comparison using '==' and not '>=' is important, as it allows <max_detected_clusters_>=-1
             // to publish infinite markers
-            if (clusters_published_counter == max_detected_clusters_) 
+            if (clusters_published_counter == max_detected_clusters_)
                 break;
         }
         //debug_file.close();
 
         // Clear remaining markers in Rviz
-        for (int id_num_diff = num_prev_markers_published_-id_num; id_num_diff > 0; id_num_diff--) 
-        {           
+        for (int id_num_diff = num_prev_markers_published_-id_num; id_num_diff > 0; id_num_diff--)
+        {
             visualization_msgs::msg::Marker m;
             m.header.stamp = scan->header.stamp;
             m.header.frame_id = fixed_frame_;
@@ -338,7 +341,7 @@ private:
     class CompareLegs
     {
     public:
-        bool operator()(const leg_detector_msgs::msg::Leg &a, const leg_detector_msgs::msg::Leg &b)
+        bool operator()(const leg_detector_msgs::msg::Leg &a, const leg_detector_msgs::msg::Leg &b) const
         {
 
             float rel_dist_a = pow(a.position.x * a.position.x + a.position.y * a.position.y, 1. / 2.);

@@ -26,7 +26,7 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(leg_detector_msgs REQUIRED)
-find_package(OpenCV 3.4.12 REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
@@ -46,7 +46,7 @@ add_executable (detect_leg_clusters
                 include/leg_detector/laser_processor.h
                 include/leg_detector/cluster_features.h
                 )
-ament_target_dependencies(detect_leg_clusters rclcpp leg_detector_msgs OpenCV sensor_msgs tf2 tf2_geometry_msgs tf2_ros visualization_msgs) 
+ament_target_dependencies(detect_leg_clusters rclcpp leg_detector_msgs OpenCV sensor_msgs tf2 tf2_geometry_msgs tf2_ros visualization_msgs)
 
 add_executable (local_occupancy_grid_mapping
                 src/laser_processor.cpp

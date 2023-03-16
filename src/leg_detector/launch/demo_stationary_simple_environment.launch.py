@@ -13,20 +13,21 @@ forest_file_path = leg_detector_path + "/config/trained_leg_detector_res=0.33.ya
 
 def generate_launch_description():
 
-    ld = LaunchDescription([
+    # ld = LaunchDescription([
 
-        # Launching Rosbag node
-        launch.actions.ExecuteProcess(
-            cmd=['ros2', 'bag', 'play', '-s', 'rosbag_v2', rosbag_path],
-            output='screen'
-        ),
+    #     # Launching Rosbag node
+    #     launch.actions.ExecuteProcess(
+    #         cmd=['ros2', 'bag', 'play', '-s', 'rosbag_v2', rosbag_path],
+    #         output='screen'
+    #     ),
 
-        # Launching RVIZ2
-        launch.actions.ExecuteProcess(
-            cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', rviz2_config_path],
-            output='screen'
-        )
-    ])
+    #     # Launching RVIZ2
+    #     launch.actions.ExecuteProcess(
+    #         cmd=['ros2', 'run', 'rviz2', 'rviz2', '-d', rviz2_config_path],
+    #         output='screen'
+    #     )
+    # ])
+    ld = LaunchDescription()
 
     # Launching detect_leg_clusters node
     detect_leg_clusters_node = Node(
@@ -49,7 +50,7 @@ def generate_launch_description():
             {"scan_topic" : "/scan"},
             {"fixed_frame" : "laser"},
             {"scan_frequency" : 10}
-        ]    
+        ]
     )
 
     # Launching inflated_human_scan node
@@ -61,7 +62,7 @@ def generate_launch_description():
             {"inflation_radius" : 1.0}
         ]
     )
-        
+
     # Launching local_occupancy_grid_mapping node
     local_occupancy_grid_mapping_node = Node(
         package="leg_detector",
@@ -70,7 +71,7 @@ def generate_launch_description():
         parameters=[
             {"scan_topic" : "/scan"},
             {"fixed_frame" : "laser"},
-        ]    
+        ]
     )
 
     ld.add_action(detect_leg_clusters_node)
@@ -78,5 +79,5 @@ def generate_launch_description():
     ld.add_action(inflated_human_scan_node)
     ld.add_action(local_occupancy_grid_mapping_node)
 
-    return ld 
- 
+    return ld
+

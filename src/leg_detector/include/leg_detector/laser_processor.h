@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -81,8 +81,8 @@ namespace laser_processor
     {
         /**
         * @brief The comparator allowing the creation of an ordered set of Samples
-        */  
-        inline bool operator() (const Sample* a, const Sample* b)
+        */
+        inline bool operator() (const Sample* a, const Sample* b) const
         {
             return (a->index <  b->index);
         }
@@ -111,14 +111,14 @@ namespace laser_processor
             * @return Centriod in (x,y,0) (z-element assumed 0)
             */
             geometry_msgs::msg::Point getPosition();
-           
+
     };
 
     /**
     * @brief A scan processor to split the scan into clusters
     */
     class ScanProcessor
-    {   
+    {
         std::list<SampleSet*> clusters_;
         sensor_msgs::msg::LaserScan scan_;
 
@@ -134,7 +134,7 @@ namespace laser_processor
             * @param scan Scan to be processed
             */
             ScanProcessor(const sensor_msgs::msg::LaserScan& scan);
-            
+
             /**
             * @brief Destructor
             */

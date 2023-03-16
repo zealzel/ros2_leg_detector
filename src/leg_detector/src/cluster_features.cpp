@@ -34,8 +34,14 @@
 
 #include "leg_detector/cluster_features.h"
 
-#include <opencv/cxcore.h>
-#include <opencv/cv.h>
+// #include <opencv/cxcore.h>
+#include "opencv2/core/core_c.h"
+
+// #include <opencv/cv.h>
+#include "opencv2/imgproc/imgproc_c.h"
+// #include "opencv2/photo/photo_c.h"
+// #include "opencv2/video/tracking_c.h"
+// #include "opencv2/objdetect/objdetect_c.h"
 
 
 std::vector<float> ClusterFeatures::calcClusterFeatures(const laser_processor::SampleSet* cluster, const sensor_msgs::msg::LaserScan& scan)
@@ -87,7 +93,7 @@ std::vector<float> ClusterFeatures::calcClusterFeatures(const laser_processor::S
     int prev_ind = (*first)->index - 1;
     int next_ind = (*last)->index + 1;
 
-    float occluded_left = 1; 
+    float occluded_left = 1;
     float occluded_right = 1;
 
     if (prev_ind >= 0)
@@ -98,8 +104,8 @@ std::vector<float> ClusterFeatures::calcClusterFeatures(const laser_processor::S
 
             if ((*first)->range < prev->range or prev->range < 0.01)
             occluded_left = 0;
-      
-            delete prev;      
+
+            delete prev;
         }
     }
 
@@ -111,7 +117,7 @@ std::vector<float> ClusterFeatures::calcClusterFeatures(const laser_processor::S
 
             if ((*last)->range < next->range or next->range < 0.01)
                 occluded_right = 0;
-      
+
             delete next;
         }
     }
@@ -306,17 +312,17 @@ std::vector<float> ClusterFeatures::calcClusterFeatures(const laser_processor::S
     std::vector<float> features;
 
     // features from "Using Boosted Features for the Detection of People in 2D Range Data"
-    features.push_back(num_points);           
-    features.push_back(std);                  
-    features.push_back(avg_median_dev);               
-    features.push_back(width);                
-    features.push_back(linearity);            
-    features.push_back(circularity);          
-    features.push_back(radius);               
-    features.push_back(boundary_length);  
-    features.push_back(boundary_regularity);      
-    features.push_back(mean_curvature);       
-    features.push_back(ang_diff);    
+    features.push_back(num_points);
+    features.push_back(std);
+    features.push_back(avg_median_dev);
+    features.push_back(width);
+    features.push_back(linearity);
+    features.push_back(circularity);
+    features.push_back(radius);
+    features.push_back(boundary_length);
+    features.push_back(boundary_regularity);
+    features.push_back(mean_curvature);
+    features.push_back(ang_diff);
     // feature from paper which cannot be calculated here: mean speed
 
     // Inscribed angular variance, I believe. Not sure what paper this is from
