@@ -11,6 +11,7 @@ rosbag_path = leg_detector_path + "/rosbag/demos/demo_stationary_simple_environm
 rviz2_config_path = leg_detector_path + "/rosbag/demos/rviz/demo_stationary_simple_environment.rviz"
 forest_file_path = leg_detector_path + "/config/trained_leg_detector_res=0.33.yaml"
 
+
 def generate_launch_description():
 
     # ld = LaunchDescription([
@@ -34,10 +35,14 @@ def generate_launch_description():
             package="leg_detector",
             executable="detect_leg_clusters",
             name="detect_leg_clusters",
-            parameters= [
-                {"forest_file" : forest_file_path},
-                {"scan_topic" : "/scan"},
-                {"fixed_frame" : "laser"},
+            parameters=[
+                {"forest_file": forest_file_path},
+                {"scan_topic": "/scan"},
+                {"fixed_frame": "laser_frame"},
+                #
+                {"min_points_per_cluster": 3},
+                {"max_detected_clusters": 5},
+                {"max_detect_distance": 5.0},
             ]
     )
 
@@ -47,9 +52,10 @@ def generate_launch_description():
         executable="joint_leg_tracker.py",
         name="joint_leg_tracker",
         parameters=[
-            {"scan_topic" : "/scan"},
-            {"fixed_frame" : "laser"},
-            {"scan_frequency" : 10}
+            {"scan_topic": "/scan"},
+            {"fixed_frame": "laser_frame"},
+            {"scan_frequency": 7.5},
+            {"dist_travelled_together_to_initiate_leg_pair": 0.3},
         ]
     )
 
@@ -59,7 +65,7 @@ def generate_launch_description():
         executable="inflated_human_scan",
         name="inflated_human_scan",
         parameters=[
-            {"inflation_radius" : 1.0}
+            {"inflation_radius": 0.5}
         ]
     )
 
@@ -69,8 +75,8 @@ def generate_launch_description():
         executable="local_occupancy_grid_mapping",
         name="local_occupancy_grid_mapping",
         parameters=[
-            {"scan_topic" : "/scan"},
-            {"fixed_frame" : "laser"},
+            {"scan_topic": "/scan"},
+            {"fixed_frame": "laser_frame"},
         ]
     )
 
@@ -80,4 +86,3 @@ def generate_launch_description():
     ld.add_action(local_occupancy_grid_mapping_node)
 
     return ld
-

@@ -84,6 +84,7 @@ endif()
 # Install Python executables
 install(PROGRAMS
   scripts/joint_leg_tracker.py
+  scripts/followme.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
